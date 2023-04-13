@@ -76,7 +76,16 @@ conda activate rnaseq
 ***Apple M1 platform is based on ARM, in Reduced Instruction Set Computing (RISC) and may require Parallels Desktop for Mac.***
 * [Parallels](https://https://www.parallels.com/)
 
-### III. Cod Documentation
+
+#### Running the code
+
+To execute the code, type:
+```
+snakemake --snakefile workflow/Snakefile --cores 4 -np
+```
+
+
+### III. Code Documentation
 * To view the snakemake rule graph:
 ```
 snakemake --rulegraph | dot -T png > rulegraph_rnaseq.png
