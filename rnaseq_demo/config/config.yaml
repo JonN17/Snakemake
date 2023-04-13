@@ -1,0 +1,23 @@
+# Select pretrimming Y or N
+pretrim_fastqc: Y
+
+# Directory that contains the fastq.gz files
+fastq: fastq
+
+# Directory for the output files
+out: out
+
+# fastp trimming parameters
+fastp:  -q 20 -u 20 -3 -W 5 -x -g -l 50 -c -h
+
+# Reference files
+star: "dummy.txt"
+star_indice: "dummy.txt"
+gtf: gtf
+
+# Performance and system settings
+cpu_fastq: 4
+cpu_align: 8
+
+# Regular expression used to extract the sample name from the fastq.gz files
+name_split: _R

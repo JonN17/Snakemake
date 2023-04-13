@@ -1,0 +1,55 @@
+import glob
+import itertools
+import os
+import re
+import sys
+import pandas as pd
+
+# Exit upon failure
+shell.prefix("set -eo pipefail; ")
+
+# Yaml file for configuration settings.
+configfile:"config/config.yaml"
+
+# Import parameters from config
+fastq = config["fastq"]
+fastp = config["fastp"]
+star = config["star"]
+out = config["out"]
+pretrim_fastqc = config["pretrim_fastqc"]
+cpu_fastq = config['cpu_fastq']
+cpu_align = config['cpu_align']
+star_indice = config['star_indice']
+gtf = config['gtf']
+name_split = config['name_split']
+
+# Sample IDs extraction
+def Parse_SampleID(fname):
+    return fname.split(fastq + '/')[-1].split(name_split + '1.fastq.gz')[0].split(name_split + '2.fastq.gz')[0]
+file = sorted(glob.glob(fastq + '/*.fastq.gz'), key=Parse_SampleID)
+d = {}
+for key, value in itertools.groupby(file, Parse_SampleID):
+    d[key] = list(value)
+samples = d.keys()
+
+# Configure fastq.gz paths for optional trimming
+trimming = config.get("trimming", "Y")
+if trimming == "Y":
+    r1 = out + "/trimmed/{sample}/{sample}_trimmed_R1.fastq.gz"
+    r2 = out + "/trimmed/{sample}/{sample}_trimmed_R2.fastq.gz"
+elif trimming == "N":
+    r1 = fastq + "/" + fastq_name + "_R1.fastq.gz"
+    r2 = fastq + "/" + fastq_name + "_R2.fastq.gz"
+
+# Output files
+file=out + "/align/{sample}/{sample}_aligned.sortedByCoord.out.bam"
+star_files=expand(file, sample = samples)
+
+# Import snakefile
+include: "rules/universal.smk"
+
+# Rules to execute
+localrules: all
+
+rule all:
+    input: star_files
